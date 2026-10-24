@@ -9,7 +9,7 @@
 - **Fastest vs. Safest Route Comparison:** Side-by-side polyline routing, safety scores (0–100), distance, and time deltas.
 - **Explainable Factors:** Real-time visibility into street lighting, proximity to open havens/transit/police, and historic incident exposure.
 - **Detour Allowance Slider:** User-tunable slider (0% to 50% extra distance) allowing personal control over the safety-distance tradeoff.
-- **Time-of-Day Dynamics:** Dynamic scoring for **Day**, **Evening**, and **Night** shifts.
+- **Time-of-Day Dynamics:** Dynamic scoring with dedicated **Day Mode** (well-lit) and official OpenFreeMap **Night Mode** (lighting penalty active).
 - **Crowdsourced Unsafe Spot Reporting:** Direct nearest-segment penalty with immediate live map rescoring.
 - **Curated Demo Presets:** 1-click test scenarios for rapid pitch evaluations.
 - **Incident CSV Ingestion:** Support for uploading custom crime/incident point datasets.
@@ -18,7 +18,7 @@
 
 ## 🏗️ Architecture & Tech Stack
 
-- **Frontend:** React 19, TypeScript, Vite, Tailwind CSS, MapLibre GL, Carto Positron & Dark Matter vector tiles.
+- **Frontend:** React 19, TypeScript, Vite, Tailwind CSS, MapLibre GL, OpenFreeMap vector basemaps (Dark & Positron styles, zero API key required).
 - **Backend:** Python 3.12, FastAPI, NetworkX, OSMnx, GeoPandas, Shapely, Scikit-learn.
 - **Data Source:** Chicago Open Data Portal (Socrata API) + OpenStreetMap (OSM) infrastructure.
 - **Routing Engine:** Constrained Multi-Candidate shortest paths (Yen's K-Shortest Paths) with composite safety score optimization.

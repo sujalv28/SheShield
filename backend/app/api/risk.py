@@ -19,7 +19,7 @@ def get_risk_color(score: float) -> str:
 @router.get("/risk")
 def get_risk_overlay(
     request: Request,
-    time: Literal["day", "evening", "night"] = Query("night", description="Time bucket")
+    time: Literal["day", "night"] = Query("night", description="Time bucket")
 ):
     """Returns street segments with risk properties for the map overlay."""
     graph = getattr(request.app.state, "graph", None)

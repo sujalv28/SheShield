@@ -69,7 +69,7 @@ flowchart TD
 **Query Parameters:**
 - `from_lat`, `from_lng`: Origin coordinates
 - `to_lat`, `to_lng`: Destination coordinates
-- `time`: `day` | `evening` | `night` (default: `night`)
+- `time`: `day` | `night` (default: `night`)
 - `max_detour`: Float (e.g. `0.20` for 20% max detour over fastest route)
 
 **Response:**
@@ -101,7 +101,7 @@ flowchart TD
 
 ### 2. `GET /api/risk`
 **Query Parameters:**
-- `time`: `day` | `evening` | `night`
+- `time`: `day` | `night`
 
 **Response:**
 - `FeatureCollection` of street segments with normalized risk properties `[0.0 - 1.0]` and color buckets for rendering the street safety overlay.
@@ -141,7 +141,7 @@ flowchart TD
    - Fetch Chicago Downtown/Loop walking graph via OSMnx.
    - Query Chicago Data Portal (Socrata API) for recent violent/street crime records.
    - Extract OSM amenities (police stations, transit stations, 24/7 convenience/shops) and `lit` tags.
-   - Compute baseline edge risk weights across `day`, `evening`, `night` and save pre-scored graph.
+   - Compute baseline edge risk weights across `day` and `night` and save pre-scored graph.
 
 3. **Phase 3: Backend Routing Engine & APIs**
    - Implement Yen's K-Shortest Paths candidate generator and safety scoring filter.

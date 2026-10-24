@@ -33,9 +33,8 @@ RISK_WEIGHTS = {
     "protective_proximity": 0.20,
 }
 
-# Time bucket definitions
+# Time bucket definitions (Day vs Night)
 TIME_BUCKETS = {
-    "day": {"start": 7, "end": 18, "lighting_penalty_active": False},
-    "evening": {"start": 18, "end": 22, "lighting_penalty_active": True},
-    "night": {"start": 22, "end": 7, "lighting_penalty_active": True},
+    "day": {"start": 7, "end": 20, "lighting_penalty_active": False},
+    "night": {"start": 20, "end": 7, "lighting_penalty_active": True},
 }

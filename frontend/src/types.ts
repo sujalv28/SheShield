@@ -1,4 +1,4 @@
-export type TimeBucket = 'day' | 'evening' | 'night';
+export type TimeBucket = 'day' | 'night';
 
 export interface RouteFactors {
   lighting_score: number;

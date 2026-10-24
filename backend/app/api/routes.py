@@ -135,7 +135,7 @@ def compute_route(
     from_lng: float = Query(..., description="Origin longitude"),
     to_lat: float = Query(..., description="Destination latitude"),
     to_lng: float = Query(..., description="Destination longitude"),
-    time: Literal["day", "evening", "night"] = Query("night", description="Time bucket"),
+    time: Literal["day", "night"] = Query("night", description="Time bucket"),
     max_detour: float = Query(0.20, description="Detour allowance factor, e.g. 0.20 for 20%")
 ):
     """Computes fastest vs safest route using Yen's K-Shortest Paths within detour cap."""
@@ -236,8 +236,8 @@ def compute_route(
     fastest_dist = 1350.0
     detour_dist = fastest_dist * (1.0 + min(0.35, max(0.08, max_detour * 0.85)))
     
-    fastest_score = 54.0 if time == "night" else (68.0 if time == "evening" else 82.0)
-    safest_score = 86.0 if time == "night" else (91.0 if time == "evening" else 94.0)
+    fastest_score = 54.0 if time == "night" else 82.0
+    safest_score = 86.0 if time == "night" else 94.0
 
     return RouteResponse(
         fastest=RouteDetail(
