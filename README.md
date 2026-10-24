@@ -13,6 +13,7 @@
 - **Crowdsourced Unsafe Spot Reporting:** Direct nearest-segment penalty with immediate live map rescoring.
 - **Demo Showcase Presets:** User-selectable 1-click scenarios for a repeatable hackathon showcase.
 - **Incident CSV Ingestion:** Support for uploading custom crime/incident point datasets.
+- **Gemma Data Analysis:** Optional Gemma analysis of uploaded Chicago incident records for coverage, patterns, and scoring limitations; routing remains deterministic.
 
 ---
 
@@ -37,6 +38,8 @@
 ```
 - Frontend: [http://localhost:5173](http://localhost:5173)
 - Backend API Docs: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+To enable Gemma analysis, set the backend `API_KEY` environment variable. The model defaults to `gemma-4-31b-it`; override it with `GEMMA_MODEL` if needed. CSV ingestion continues to work without a key, but the analysis result is marked unavailable.
 
 ### Run with Docker Compose
 ```bash

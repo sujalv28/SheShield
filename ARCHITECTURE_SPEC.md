@@ -12,6 +12,7 @@ Based on the [PRD.md](file:///home/kringe-lord/Projects/HackDay-RNC/SheShield/PR
 | **Data Storage & Routing** | **Offline Precomputed Graph + In-Memory NetworkX** | Guarantees < 100ms response time for route queries while supporting dynamic in-memory penalties for crowdsourced reports. |
 | **Routing Algorithm** | **Constrained Multi-Candidate (Yen's K-Shortest Paths)** | Evaluates top $K$ alternative shortest paths within the user's detour threshold, selecting the candidate with the highest composite safety score. |
 | **Crime Weighting** | **Violent / Street-Level Offenses with Footfall Normalization** | Focuses on robbery, assault, battery, and street harassment; normalized against commercial/retail POI density to eliminate busy-area bias. |
+| **Crime Data Analysis** | **Optional Gemma Batch Analysis** | Analyzes uploaded Chicago incident records for data quality, category/spatial/temporal patterns, scoring implications, and limitations without changing deterministic route scoring. |
 | **Street Lighting** | **Hierarchical Fallback Proxy** | Prioritizes OSM `lit` tags; falls back to road functional classification and POI proximity when tags are absent, with confidence scoring. |
 | **Unsafe-Spot Reporting** | **Direct Nearest-Edge Penalty** | Submitting a report directly applies a live risk penalty to the single closest street edge in memory. |
 | **Frontend Stack** | **React + Vite + Tailwind CSS + MapLibre GL** | WebGL-accelerated vector rendering for smooth colored route polylines and street-level risk overlays. |
@@ -44,6 +45,7 @@ flowchart TD
         FastAPI -->|GET /api/risk| MemoryGraph
         FastAPI -->|POST /api/upload-csv| CSVIngestor["Custom Incident Scorer"]
         CSVIngestor --> MemoryGraph
+        CSVIngestor -.->|Optional analysis| Gemma["Gemma model"]
     end
 
     subgraph FrontendApp ["Frontend Application (React + Vite + MapLibre GL)"]

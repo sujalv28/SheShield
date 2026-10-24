@@ -1,8 +1,10 @@
 """Custom incident dataset CSV upload endpoint."""
 import io
 import csv
+import asyncio
 from typing import Dict, Any
 from fastapi import APIRouter, Request, UploadFile, File, HTTPException
+from ..services.gemma_analysis import analyze_incidents
 
 router = APIRouter()
 
@@ -38,6 +40,7 @@ async def upload_incidents_csv(
 
     valid_count = 0
     categories: Dict[str, int] = {}
+    valid_rows: list[dict[str, Any]] = []
 
     for row in reader:
         norm_row = {field_map[k]: v for k, v in row.items() if k in field_map}
@@ -50,13 +53,21 @@ async def upload_incidents_csv(
                 valid_count += 1
                 cat = norm_row.get("category", "Unspecified").strip()
                 categories[cat] = categories.get(cat, 0) + 1
+                valid_rows.append(norm_row)
             except ValueError:
                 continue
+
+    gemma_analysis = await asyncio.to_thread(
+        analyze_incidents,
+        file.filename,
+        valid_rows,
+    )
 
     return {
         "status": "success",
         "filename": file.filename,
         "valid_spatial_records": valid_count,
         "categories_found": categories,
+        "gemma_analysis": gemma_analysis,
         "message": f"Successfully ingested {valid_count} incident records. Edge scores updated."
     }

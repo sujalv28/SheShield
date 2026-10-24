@@ -83,6 +83,26 @@ export const UploadModal: React.FC<UploadModalProps> = ({
             <p className="text-xs text-emerald-700 mt-1">
               Parsed {result.valid_spatial_records} geocoded incidents. Graph risk scores refreshed.
             </p>
+            {result.gemma_analysis?.status === 'success' && (
+              <div className="mt-4 rounded-xl border border-indigo-200 bg-indigo-50 p-3 text-left">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-700">
+                  Gemma Data Analysis
+                </p>
+                <p className="mt-1 whitespace-pre-wrap text-xs leading-relaxed text-slate-700">
+                  {result.gemma_analysis.analysis}
+                </p>
+              </div>
+            )}
+            {result.gemma_analysis?.status === 'not_configured' && (
+              <p className="mt-3 text-[11px] text-slate-500">
+                Gemma analysis is unavailable until the backend API key is configured.
+              </p>
+            )}
+            {result.gemma_analysis?.status === 'error' && (
+              <p className="mt-3 text-[11px] text-amber-700">
+                CSV ingestion completed, but Gemma analysis was unavailable.
+              </p>
+            )}
             <button
               onClick={onClose}
               className="mt-4 px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm"
