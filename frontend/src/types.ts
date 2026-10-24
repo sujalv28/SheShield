@@ -1,4 +1,4 @@
-export type TimeBucket = 'day' | 'night';
+export type TimeBucket = 'day';
 
 export interface RouteFactors {
   lighting_score: number;
@@ -43,6 +43,7 @@ export interface DemoPreset {
   description: string;
   from: [number, number]; // [lng, lat]
   to: [number, number];   // [lng, lat]
-  time: TimeBucket;
   detour: number;
+  fastestPath: [number, number][];
+  safestPath: [number, number][];
 }

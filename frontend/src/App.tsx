@@ -8,16 +8,15 @@ import { UploadModal } from './components/UploadModal';
 import { TimeBucket, RouteResponse, DemoPreset, UnsafeReportRequest } from './types';
 
 export default function App() {
-  const [timeBucket, setTimeBucket] = useState<TimeBucket>('night');
+  const timeBucket: TimeBucket = 'day';
   const [detourCap, setDetourCap] = useState<number>(0.20);
   const [showRiskOverlay, setShowRiskOverlay] = useState<boolean>(false);
   const [selectedRoute, setSelectedRoute] = useState<'safest' | 'fastest'>('safest');
   
-  // Default to first demo preset (Loop to River North)
-  const defaultPreset = DEMO_PRESETS[0];
-  const [origin, setOrigin] = useState<[number, number] | null>(defaultPreset.from);
-  const [destination, setDestination] = useState<[number, number] | null>(defaultPreset.to);
-  const [activePresetId, setActivePresetId] = useState<string | null>(defaultPreset.id);
+  // Let the user choose a showcase preset or set both points on the map.
+  const [origin, setOrigin] = useState<[number, number] | null>(null);
+  const [destination, setDestination] = useState<[number, number] | null>(null);
+  const [activePresetId, setActivePresetId] = useState<string | null>(null);
 
   const [routeData, setRouteData] = useState<RouteResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -59,6 +58,12 @@ export default function App() {
         max_detour: detourCap.toString(),
       });
 
+      const selectedPreset = DEMO_PRESETS.find((preset) => preset.id === activePresetId);
+      if (selectedPreset) {
+        params.set('fastest_path', JSON.stringify(selectedPreset.fastestPath));
+        params.set('safest_path', JSON.stringify(selectedPreset.safestPath));
+      }
+
       const res = await fetch(`/api/route?${params.toString()}`);
       if (res.ok) {
         const data: RouteResponse = await res.json();
@@ -74,11 +79,10 @@ export default function App() {
   // Re-fetch whenever origin, destination, timeBucket, or detourCap change
   useEffect(() => {
     fetchRoute();
-  }, [origin, destination, timeBucket, detourCap]);
+  }, [origin, destination, timeBucket, detourCap, activePresetId]);
 
   const handleSelectPreset = (preset: DemoPreset) => {
     setActivePresetId(preset.id);
-    setTimeBucket(preset.time);
     setDetourCap(preset.detour);
     setOrigin(preset.from);
     setDestination(preset.to);
@@ -158,7 +162,6 @@ export default function App() {
       <div className="relative flex-1 w-full h-full">
         {/* Fullscreen Map Canvas */}
         <Map
-          timeBucket={timeBucket}
           routeData={routeData}
           selectedRoute={selectedRoute}
           showRiskOverlay={showRiskOverlay}
@@ -171,10 +174,8 @@ export default function App() {
 
         {/* Floating Sidebar Panels */}
         <div className="absolute top-4 left-4 z-10 w-96 max-h-[calc(100vh-5.5rem)] overflow-y-auto flex flex-col gap-4 pr-1 pointer-events-auto custom-scrollbar">
-          {/* Controls: Time, Detour, Presets */}
+          {/* Controls: Detour and Demo Showcase Presets */}
           <Controls
-            timeBucket={timeBucket}
-            onTimeChange={setTimeBucket}
             detourCap={detourCap}
             onDetourChange={setDetourCap}
             showRiskOverlay={showRiskOverlay}

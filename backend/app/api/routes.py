@@ -1,5 +1,6 @@
 """Route computation endpoints implementing Yen's K-Shortest Path & Safety Scoring."""
 import itertools
+import json
 from typing import Literal, List, Dict, Any, Tuple
 from fastapi import APIRouter, Request, Query, HTTPException
 from ..models import RouteResponse, RouteDetail, RouteDelta, RouteFactors, WorstSegment
@@ -136,7 +137,9 @@ def compute_route(
     to_lat: float = Query(..., description="Destination latitude"),
     to_lng: float = Query(..., description="Destination longitude"),
     time: Literal["day", "night"] = Query("night", description="Time bucket"),
-    max_detour: float = Query(0.20, description="Detour allowance factor, e.g. 0.20 for 20%")
+    max_detour: float = Query(0.20, description="Detour allowance factor, e.g. 0.20 for 20%"),
+    fastest_path: str | None = Query(None, description="Optional street-aligned demo path as JSON coordinates"),
+    safest_path: str | None = Query(None, description="Optional street-aligned demo path as JSON coordinates"),
 ):
     """Computes fastest vs safest route using Yen's K-Shortest Paths within detour cap."""
     graph = getattr(request.app.state, "graph", None)
@@ -217,7 +220,7 @@ def compute_route(
 
     # High-fidelity realistic scenario fallback if graph is not loaded or route error
     # Uses Chicago coordinates connecting origin to destination with a realistic detour
-    fastest_coords = [
+    fallback_fastest_coords = [
         [from_lng, from_lat],
         [from_lng + (to_lng - from_lng) * 0.45, from_lat + (to_lat - from_lat) * 0.25],
         [from_lng + (to_lng - from_lng) * 0.75, from_lat + (to_lat - from_lat) * 0.65],
@@ -225,13 +228,34 @@ def compute_route(
     ]
     # Detour path pushes towards well-lit commercial transit corridor (e.g. Michigan Ave or State St)
     detour_offset = 0.0035 * (1.0 + max_detour)
-    safest_coords = [
+    fallback_safest_coords = [
         [from_lng, from_lat],
         [from_lng + (to_lng - from_lng) * 0.3 + detour_offset, from_lat + (to_lat - from_lat) * 0.15],
         [from_lng + (to_lng - from_lng) * 0.6 + detour_offset, from_lat + (to_lat - from_lat) * 0.70],
         [from_lng + (to_lng - from_lng) * 0.85 + (detour_offset * 0.5), from_lat + (to_lat - from_lat) * 0.90],
         [to_lng, to_lat]
     ]
+
+    def parse_demo_path(raw_path: str | None) -> list[list[float]] | None:
+        if not raw_path:
+            return None
+        try:
+            path = json.loads(raw_path)
+            if not isinstance(path, list) or len(path) < 2:
+                return None
+            if not all(
+                isinstance(point, list)
+                and len(point) == 2
+                and all(isinstance(value, (int, float)) for value in point)
+                for point in path
+            ):
+                return None
+            return [[float(point[0]), float(point[1])] for point in path]
+        except (TypeError, ValueError, json.JSONDecodeError):
+            return None
+
+    fastest_coords = parse_demo_path(fastest_path) or fallback_fastest_coords
+    safest_coords = parse_demo_path(safest_path) or fallback_safest_coords
 
     fastest_dist = 1350.0
     detour_dist = fastest_dist * (1.0 + min(0.35, max(0.08, max_detour * 0.85)))

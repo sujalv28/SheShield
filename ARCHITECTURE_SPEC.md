@@ -17,7 +17,7 @@ Based on the [PRD.md](file:///home/kringe-lord/Projects/HackDay-RNC/SheShield/PR
 | **Frontend Stack** | **React + Vite + Tailwind CSS + MapLibre GL** | WebGL-accelerated vector rendering for smooth colored route polylines and street-level risk overlays. |
 | **Basemap Styling** | **Carto Positron (Day) & Dark Matter (Night)** | Clean, high-contrast monochrome basemaps that highlight risk segments and route deltas without visual clutter. |
 | **UX & Explainability** | **Comparative Side-by-Side Cards & Worst-Stretch Pin** | Displays +Safety% gain, +Detour overhead, factor breakdown bars, and markers on high-risk segments. |
-| **Demo Scenarios** | **Curated 1-Click Presets + Freeform Pinning + CSV Upload** | Fast, deterministic pitching via presets while preserving full interactive map clicks and custom CSV ingestion. |
+| **Demo Scenarios** | **User-Selectable 1-Click Presets + Freeform Pinning + CSV Upload** | Repeatable showcase flows via presets while preserving full interactive map clicks and custom CSV ingestion. |
 | **Validation Benchmark** | **Standalone Offline Evaluation Script** | Generates 1,000 random-pair holdout metrics, p-values, and summary charts as Markdown/PDF reports for pitch slides. |
 | **Project Structure** | **Monorepo with Docker Compose & Local Dev Runners** | Cleanly separated `backend/` and `frontend/` with root orchestration. |
 

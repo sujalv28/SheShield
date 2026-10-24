@@ -1,10 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { RouteResponse, TimeBucket } from '../types';
+import { RouteResponse } from '../types';
 
 interface MapProps {
-  timeBucket: TimeBucket;
   routeData: RouteResponse | null;
   selectedRoute: 'safest' | 'fastest';
   showRiskOverlay: boolean;
@@ -16,7 +15,6 @@ interface MapProps {
 }
 
 export const Map: React.FC<MapProps> = ({
-  timeBucket,
   routeData,
   selectedRoute,
   showRiskOverlay,
@@ -33,12 +31,10 @@ export const Map: React.FC<MapProps> = ({
   const worstMarkerRef = useRef<maplibregl.Marker | null>(null);
   const reportMarkersRef = useRef<maplibregl.Marker[]>([]);
 
-  // Official OpenFreeMap vector styles: Night Mode uses Dark; Day Mode uses Positron
-  const styleUrl = timeBucket === 'night'
-    ? 'https://tiles.openfreemap.org/styles/dark'
-    : 'https://tiles.openfreemap.org/styles/positron';
+  // Official OpenFreeMap Positron (Light Mode) vector style
+  const styleUrl = 'https://tiles.openfreemap.org/styles/positron';
 
-  // Helper to ensure route and risk layers are attached to current style
+  // Helper to attach route polylines and risk layers to the map
   const setupLayers = (map: maplibregl.Map) => {
     // 1. Risk Overlay Source & Layer
     if (!map.getSource('risk-overlay')) {
@@ -55,13 +51,13 @@ export const Map: React.FC<MapProps> = ({
         layout: { 'line-join': 'round', 'line-cap': 'round' },
         paint: {
           'line-color': ['get', 'risk_color'],
-          'line-width': 3.5,
-          'line-opacity': 0.75,
+          'line-width': 4.0,
+          'line-opacity': 0.80,
         },
       });
     }
 
-    // 2. Fastest Route Layer (Dashed Amber)
+    // 2. Fastest Route Layer (Dashed Amber-Orange)
     if (!map.getSource('fastest-route')) {
       map.addSource('fastest-route', {
         type: 'geojson',
@@ -75,7 +71,7 @@ export const Map: React.FC<MapProps> = ({
         source: 'fastest-route',
         layout: { 'line-join': 'round', 'line-cap': 'round' },
         paint: {
-          'line-color': '#f59e0b',
+          'line-color': '#d97706',
           'line-width': 4.5,
           'line-dasharray': [2, 1.5],
           'line-opacity': selectedRoute === 'fastest' ? 1.0 : 0.65,
@@ -83,7 +79,7 @@ export const Map: React.FC<MapProps> = ({
       });
     }
 
-    // 3. Safest Route Layers (Glow Casing + Solid Emerald)
+    // 3. Safest Route Layers (Soft Glow Casing + Solid Emerald)
     if (!map.getSource('safest-route')) {
       map.addSource('safest-route', {
         type: 'geojson',
@@ -97,9 +93,9 @@ export const Map: React.FC<MapProps> = ({
         source: 'safest-route',
         layout: { 'line-join': 'round', 'line-cap': 'round' },
         paint: {
-          'line-color': '#059669',
+          'line-color': '#34d399',
           'line-width': 8,
-          'line-opacity': 0.45,
+          'line-opacity': 0.5,
           'line-blur': 2,
         },
       });
@@ -111,7 +107,7 @@ export const Map: React.FC<MapProps> = ({
         source: 'safest-route',
         layout: { 'line-join': 'round', 'line-cap': 'round' },
         paint: {
-          'line-color': '#10b981',
+          'line-color': '#059669',
           'line-width': 5,
           'line-opacity': selectedRoute === 'safest' ? 1.0 : 0.65,
         },
@@ -164,13 +160,6 @@ export const Map: React.FC<MapProps> = ({
     };
   }, []);
 
-  // Update Style when timeBucket changes (Day: Positron, Night: Dark)
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map) return;
-    map.setStyle(styleUrl);
-  }, [styleUrl]);
-
   // Update Origin and Destination Markers
   useEffect(() => {
     const map = mapRef.current;
@@ -180,7 +169,7 @@ export const Map: React.FC<MapProps> = ({
       if (!originMarkerRef.current) {
         const el = document.createElement('div');
         el.className =
-          'w-6 h-6 rounded-full bg-emerald-500 border-2 border-white shadow-lg flex items-center justify-center text-xs font-bold text-white';
+          'w-6 h-6 rounded-full bg-emerald-600 border-2 border-white shadow-md flex items-center justify-center text-xs font-bold text-white';
         el.innerText = 'A';
         originMarkerRef.current = new maplibregl.Marker({ element: el })
           .setLngLat(origin)
@@ -197,7 +186,7 @@ export const Map: React.FC<MapProps> = ({
       if (!destMarkerRef.current) {
         const el = document.createElement('div');
         el.className =
-          'w-6 h-6 rounded-full bg-indigo-600 border-2 border-white shadow-lg flex items-center justify-center text-xs font-bold text-white';
+          'w-6 h-6 rounded-full bg-indigo-600 border-2 border-white shadow-md flex items-center justify-center text-xs font-bold text-white';
         el.innerText = 'B';
         destMarkerRef.current = new maplibregl.Marker({ element: el })
           .setLngLat(destination)
@@ -220,14 +209,14 @@ export const Map: React.FC<MapProps> = ({
       map.setPaintProperty(
         'safest-route-layer',
         'line-opacity',
-        selectedRoute === 'safest' ? 1.0 : 0.6
+        selectedRoute === 'safest' ? 1.0 : 0.65
       );
     }
     if (map.getLayer('fastest-route-layer')) {
       map.setPaintProperty(
         'fastest-route-layer',
         'line-opacity',
-        selectedRoute === 'fastest' ? 1.0 : 0.6
+        selectedRoute === 'fastest' ? 1.0 : 0.65
       );
     }
   }, [selectedRoute]);
@@ -249,7 +238,7 @@ export const Map: React.FC<MapProps> = ({
         const coords = routeData.fastest.worst_segment.coordinates;
         if (!worstMarkerRef.current) {
           const el = document.createElement('div');
-          el.className = 'w-5 h-5 rounded-full bg-rose-600 border-2 border-white animate-ping';
+          el.className = 'w-5 h-5 rounded-full bg-rose-600 border-2 border-white shadow animate-ping';
           const popup = new maplibregl.Popup({ offset: 12 }).setText(
             `Hazard Alert: ${routeData.fastest.worst_segment.reason}`
           );
@@ -301,7 +290,7 @@ export const Map: React.FC<MapProps> = ({
     }
 
     if (showRiskOverlay) {
-      fetch(`/api/risk?time=${timeBucket}`)
+      fetch('/api/risk?time=day')
         .then((res) => res.json())
         .then((data) => {
           const source = map.getSource('risk-overlay') as maplibregl.GeoJSONSource;
@@ -311,7 +300,7 @@ export const Map: React.FC<MapProps> = ({
         })
         .catch((err) => console.error('Failed to load risk overlay', err));
     }
-  }, [showRiskOverlay, timeBucket]);
+  }, [showRiskOverlay]);
 
   // Update Crowdsourced Report Markers
   useEffect(() => {
@@ -324,10 +313,10 @@ export const Map: React.FC<MapProps> = ({
     reports.forEach((rep) => {
       const el = document.createElement('div');
       el.className =
-        'w-6 h-6 rounded-full bg-rose-600/80 border-2 border-white shadow flex items-center justify-center text-white text-[10px] font-bold cursor-pointer';
+        'w-6 h-6 rounded-full bg-rose-600 border-2 border-white shadow-md flex items-center justify-center text-white text-[10px] font-bold cursor-pointer';
       el.innerText = '!';
       const popup = new maplibregl.Popup({ offset: 10 }).setHTML(
-        `<div class="font-bold text-rose-400 text-xs uppercase">${rep.category.replace('_', ' ')}</div><div class="text-xs text-slate-200 mt-1">${rep.notes || 'Unsafe spot report'}</div>`
+        `<div class="font-bold text-rose-600 text-xs uppercase">${rep.category.replace('_', ' ')}</div><div class="text-xs text-slate-700 mt-1">${rep.notes || 'Unsafe spot report'}</div>`
       );
       const marker = new maplibregl.Marker({ element: el })
         .setLngLat([rep.lng, rep.lat])
@@ -338,10 +327,10 @@ export const Map: React.FC<MapProps> = ({
   }, [reports]);
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full bg-slate-100">
       <div ref={mapContainer} className="w-full h-full" />
-      <div className="absolute top-4 left-4 z-10 bg-slate-900/85 backdrop-blur-md border border-slate-700/60 rounded-xl px-3 py-1.5 text-[11px] text-slate-300 shadow-lg pointer-events-none">
-        <span className="font-semibold text-white">Hint:</span> Click on map to set Origin (A) and Destination (B). Hold <kbd className="px-1 py-0.5 bg-slate-800 border border-slate-600 rounded text-slate-200">Shift</kbd> + Click to report a hazard.
+      <div className="absolute top-4 left-4 z-10 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-xl px-3.5 py-2 text-[11px] text-slate-700 shadow-md pointer-events-none">
+        <span className="font-semibold text-slate-900">Hint:</span> Click on the map to set Origin (A) and Destination (B). Hold <kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded text-slate-700 font-mono">Shift</kbd> + Click to report a hazard.
       </div>
     </div>
   );

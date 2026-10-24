@@ -46,86 +46,86 @@ export const ReportModal: React.FC<ReportModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-      <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 shadow-2xl relative text-slate-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+      <div className="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6 shadow-2xl relative text-slate-800">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-white"
+          className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
 
         <div className="flex items-center gap-3 mb-4">
-          <div className="p-2.5 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/40">
+          <div className="p-2.5 rounded-xl bg-rose-50 text-rose-600 border border-rose-200">
             <ShieldAlert className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white">Report Unsafe Spot</h3>
-            <p className="text-xs text-slate-400">Instantly applies an edge penalty to recalculate routes.</p>
+            <h3 className="text-lg font-bold text-slate-900">Report Street Hazard</h3>
+            <p className="text-xs text-slate-500">Applies an immediate edge penalty to reroute pedestrian traffic.</p>
           </div>
         </div>
 
         {success ? (
-          <div className="bg-emerald-950/40 border border-emerald-500/50 rounded-xl p-5 text-center my-4">
-            <CheckCircle className="w-10 h-10 text-emerald-400 mx-auto mb-2" />
-            <h4 className="text-sm font-bold text-white">Report Submitted!</h4>
-            <p className="text-xs text-emerald-300 mt-1">
+          <div className="bg-emerald-50 border border-emerald-300 rounded-xl p-5 text-center my-4">
+            <CheckCircle className="w-10 h-10 text-emerald-600 mx-auto mb-2" />
+            <h4 className="text-sm font-bold text-emerald-900">Report Recorded!</h4>
+            <p className="text-xs text-emerald-700 mt-1">
               Nearest road segment penalized in memory. Map overlay updated.
             </p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div>
-              <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider block mb-1.5">
+              <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider block mb-1.5">
                 Hazard Category
               </label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as any)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500"
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-500"
               >
-                <option value="poor_lighting">💡 Broken / Poor Street Lighting</option>
-                <option value="harassment">⚠️ Harassment / Suspicious Activity</option>
-                <option value="deserted">🏚️ Deserted Alley / Low Visibility</option>
-                <option value="hazard">🚧 Construction Obstruction / Chokepoint</option>
+                <option value="poor_lighting">💡 Broken Streetlight / Low Visibility</option>
+                <option value="harassment">⚠️ Public Harassment / Aggressive Behavior</option>
+                <option value="deserted">🏚️ Deserted Alleyway / Chokepoint</option>
+                <option value="hazard">🚧 Construction Obstruction / Hazard</option>
               </select>
             </div>
 
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="text-[11px] font-semibold text-slate-400 block mb-1">Latitude</label>
+                <label className="text-[11px] font-semibold text-slate-500 block mb-1">Latitude</label>
                 <input
                   type="number"
                   step="0.0001"
                   value={lat}
                   onChange={(e) => setLat(parseFloat(e.target.value))}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-200 font-mono"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-800 font-mono"
                   required
                 />
               </div>
               <div>
-                <label className="text-[11px] font-semibold text-slate-400 block mb-1">Longitude</label>
+                <label className="text-[11px] font-semibold text-slate-500 block mb-1">Longitude</label>
                 <input
                   type="number"
                   step="0.0001"
                   value={lng}
                   onChange={(e) => setLng(parseFloat(e.target.value))}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-200 font-mono"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-800 font-mono"
                   required
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider block mb-1.5">
-                Notes & Context
+              <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider block mb-1.5">
+                Notes & Description
               </label>
               <textarea
                 rows={3}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Describe lighting condition, visual obstruction, or safety concern..."
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500"
+                placeholder="Describe lighting condition, obstruction, or safety concern..."
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-500"
               />
             </div>
 
@@ -133,14 +133,14 @@ export const ReportModal: React.FC<ReportModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+                className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={submitting}
-                className="px-4 py-2 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-900/40 transition-all flex items-center gap-1.5"
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white shadow-md transition-all flex items-center gap-1.5"
               >
                 {submitting ? 'Submitting...' : 'Submit Report'}
               </button>

@@ -11,7 +11,7 @@
 - **Detour Allowance Slider:** User-tunable slider (0% to 50% extra distance) allowing personal control over the safety-distance tradeoff.
 - **Time-of-Day Dynamics:** Dynamic scoring with dedicated **Day Mode** (well-lit) and official OpenFreeMap **Night Mode** (lighting penalty active).
 - **Crowdsourced Unsafe Spot Reporting:** Direct nearest-segment penalty with immediate live map rescoring.
-- **Curated Demo Presets:** 1-click test scenarios for rapid pitch evaluations.
+- **Demo Showcase Presets:** User-selectable 1-click scenarios for a repeatable hackathon showcase.
 - **Incident CSV Ingestion:** Support for uploading custom crime/incident point datasets.
 
 ---
